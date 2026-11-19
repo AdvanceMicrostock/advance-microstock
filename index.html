@@ -69,7 +69,7 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
     }
 
     return names
-      .filter(name => typeof name === "string" && /\\.html?$/i.test(name) && !/^index\\.html?$/i.test(name))
+      .filter(name => typeof name === "string" && /\.html?$/i.test(name) && !/^index\.html?$/i.test(name))
       .map(name => ({ name, type: "file" }));
   }
 
