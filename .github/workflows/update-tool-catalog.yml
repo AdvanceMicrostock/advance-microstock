@@ -40,7 +40,7 @@ jobs:
               and path.name.lower() != "index.html"
           )
           Path("tool-manifest.json").write_text(
-              json.dumps({"files": files}, ensure_ascii=False, indent=2) + "\\n",
+              json.dumps({"files": files}, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8"
           )
 
