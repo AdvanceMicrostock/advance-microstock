@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Advance Microstock – Whisk / Flow Automation",
+  "version": "5.3.0",
+  "description": "Batch prompt automator for Google Whisk and Flow by Advance Microstock.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "scripting",
+    "sidePanel",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "https://flow.google.com/*",
+    "https://*.flow.google.com/*",
+    "https://*.scf.usercontent.goog/*",
+    "https://labs.google/*",
+    "https://*.labs.google/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+    "default_title": "Advance Microstock – Whisk / Flow Automation"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://flow.google.com/*",
+        "https://*.flow.google.com/*",
+        "https://*.scf.usercontent.goog/*",
+        "https://labs.google/*"
+      ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

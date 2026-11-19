@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advance Microstock – Whisk / Flow Automation</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-wrap">
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <img src="icon128.png" alt="Advance Microstock" class="brand-logo">
+        <div class="brand-text">
+          <div class="brand-name">ADVANCE <b>MICROSTOCK</b></div>
+          <div class="brand-sub">⚡ Whisk / Flow Automation</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="tab-status" class="badge">…</span>
+        <button type="button" id="btn-sidebar" class="icon-btn" title="Switch to sidebar (icon click will open the sidebar)">◧ Side</button>
+      </div>
+    </div>
+
+    <div id="status-notice" class="notice hidden">
+      <span id="notice-text"></span>
+    </div>
+
+    <!-- Prompts -->
+    <div class="field-group">
+      <div class="label-row">
+        <label for="prompts">Prompts (one per line)</label>
+        <div class="label-right">
+          <button type="button" id="btn-import" class="mini-btn" title="Add prompts from a .txt or .csv file">📂 Import</button>
+          <span id="prompt-count" class="count-tag">0 prompts</span>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept=".txt,.csv,text/plain,text/csv" multiple hidden>
+      <textarea id="prompts" rows="3" placeholder="One prompt per line… or drop a .txt / .csv file here" spellcheck="false"></textarea>
+    </div>
+
+    <!-- Pace -->
+    <div class="pace-row">
+      <label for="pace-slider">Pace</label>
+      <input type="range" id="pace-slider" min="0.4" max="5.0" step="0.1" value="1.2" />
+      <span id="pace-value" class="value-tag">1.2s</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="action-group">
+      <button type="button" id="btn-start" class="btn-primary"><span>▶ Start Automation</span></button>
+      <button type="button" id="btn-pause" class="btn-secondary hidden"><span id="pause-text">⏸ Pause</span></button>
+      <button type="button" id="btn-stop" class="btn-danger hidden"><span>⏹ Stop</span></button>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress-box" class="progress-box hidden">
+      <div class="progress-text">
+        <span id="progress-status">Submitting…</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-track"><div id="progress-bar" class="progress-fill" style="width: 0%"></div></div>
+      <div id="progress-current" class="progress-current">-</div>
+    </div>
+
+    <!-- Queue -->
+    <div id="queue-box" class="queue-box hidden">
+      <div class="label-row">
+        <span>Queue status</span>
+        <span id="queue-summary" class="count-tag">0 done · 0 pending</span>
+      </div>
+      <div id="queue-list" class="queue-list"></div>
+      <div class="action-group small">
+        <button type="button" id="btn-remove-done" class="btn-secondary">🧹 Remove done</button>
+        <button type="button" id="btn-clear" class="btn-secondary">🗑 Clear all</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="importer.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
