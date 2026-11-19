@@ -54,7 +54,7 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
   const appList = document.getElementById("apps");
 
   async function loadBackupFiles() {
-    const response = await fetch("./tool-manifest.json?refresh=" + Date.now(), {
+    const response = await fetch("/advance-microstock/tool-manifest.json?refresh=" + Date.now(), {
       headers: { "Accept": "application/json" },
       cache: "no-store"
     });
@@ -164,7 +164,7 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
 
     appList.innerHTML = tools.map((file, index) => {
       const info = describeTool(file.name);
-      const href = "./" + encodeURIComponent(file.name);
+      const href = "/advance-microstock/" + encodeURIComponent(file.name);
       return '<article class="app">' +
         '<div class="tag">TOOL ' + String(index + 1).padStart(2, "0") + '</div>' +
         '<h2>' + escapeHtml(info.title) + '</h2>' +
@@ -202,7 +202,7 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
           '<article class="app"><div class="tag">TOOL CATALOG</div>' +
           '<h2>Tools are temporarily unavailable</h2>' +
           '<p class="desc">The live list and backup catalog could not be loaded. Please refresh the page.</p>' +
-          '<a href="./">Retry <span aria-hidden="true">→</span></a></article>';
+          '<a href="/advance-microstock/">Retry <span aria-hidden="true">→</span></a></article>';
       }
     }
   }
