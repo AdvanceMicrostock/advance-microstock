@@ -81,7 +81,7 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
 
   function getFamily(name) {
     const base = name.replace(/\.html?$/i, "").toLowerCase();
-    if (/all[\\s_-]*in[\\s_-]*one/.test(base)) return "all-in-one";
+    if (/all[\s_-]*in[\s_-]*one/.test(base)) return "all-in-one";
     if (/pro/.test(base) && /metadata/.test(base)) return "pro-metadata";
 
     return base
