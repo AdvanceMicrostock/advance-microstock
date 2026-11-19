@@ -8,8 +8,8 @@ on:
       - '*.html'
       - '*.htm'
       - '.github/workflows/update-tool-catalog.yml'
-      - 'advance-microstock- Whisk - Flow Automation 5.3.0/advance-microstock-automator/**'
-      - 'Advance Microstock Whisk Flow Automation 5.3.0 - Installation Guide.txt'
+      - 'advance-microstock-*/advance-microstock-automator/**'
+      - 'Advance Microstock Whisk Flow Automation - Installation Guide.txt'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
         with:
           ref: main
 
-      - name: Refresh HTML tool catalog and package Chrome extension
+      - name: Refresh HTML tool catalog and package latest Chrome extension
         run: |
           python - <<'PY'
           import json
@@ -44,37 +44,49 @@ jobs:
               encoding="utf-8"
           )
 
-          # Package the Chrome extension so manifest.json is at the ZIP root.
-          extension_dir = Path(
-              "advance-microstock- Whisk - Flow Automation 5.3.0/advance-microstock-automator"
-          )
-          guide = Path(
-              "Advance Microstock Whisk Flow Automation 5.3.0 - Installation Guide.txt"
-          )
-          zip_path = Path("Advance Microstock Whisk Flow Automation 5.3.0.zip")
+          # Find the newest unpacked Chrome extension by manifest version.
+          candidates = [
+              path for path in Path(".").glob("advance-microstock-*/advance-microstock-automator")
+              if (path / "manifest.json").is_file()
+          ]
+          if not candidates:
+              raise SystemExit("No Chrome extension folder with manifest.json was found.")
 
-          if not extension_dir.is_dir():
-              raise SystemExit(f"Extension folder not found: {extension_dir}")
-          if not (extension_dir / "manifest.json").is_file():
-              raise SystemExit("manifest.json is missing from the extension folder.")
+          def version_key(folder):
+              data = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+              try:
+                  return tuple(int(part) for part in str(data.get("version", "0")).split("."))
+              except ValueError:
+                  return (0,)
+
+          extension_dir = max(candidates, key=version_key)
+          guide = Path("Advance Microstock Whisk Flow Automation - Installation Guide.txt")
+          zip_path = Path("Advance Microstock Whisk Flow Automation.zip")
+
           if not guide.is_file():
               raise SystemExit(f"Installation guide not found: {guide}")
 
+          # Keep manifest.json and all extension files directly at the ZIP root.
           with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
               for path in sorted(extension_dir.iterdir()):
                   if path.is_file():
                       archive.write(path, arcname=path.name)
               archive.write(guide, arcname="INSTALLATION GUIDE.txt")
+
+          # Remove the earlier version-specific package and guide.
+          Path("Advance Microstock Whisk Flow Automation 5.3.0.zip").unlink(missing_ok=True)
+          Path("Advance Microstock Whisk Flow Automation 5.3.0 - Installation Guide.txt").unlink(missing_ok=True)
+          print(f"Packaged extension version from: {extension_dir}")
           PY
 
       - name: Commit catalog and extension package when changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tool-manifest.json "Advance Microstock Whisk Flow Automation 5.3.0.zip"
+          git add -A
           if git diff --cached --quiet; then
             echo "Tool catalog and extension package are already up to date."
           else
-            git commit -m "chore: refresh tool catalog and extension package"
+            git commit -m "chore: refresh tool catalog and latest extension package"
             git push origin HEAD:main
           fi
