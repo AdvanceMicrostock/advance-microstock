@@ -53,10 +53,25 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
   const REPOSITORY_API = "https://api.github.com/repos/mdsojeebr/advance-microstock/contents/?ref=main";
   const appList = document.getElementById("apps");
 
-  const fallbackFiles = [
-    { name: "Advance Microstock PRO Metadata 1.6 update.html", type: "file" },
-    { name: "Advance Microstock All In One 1.2.html", type: "file" }
-  ];
+  async function loadBackupFiles() {
+    const response = await fetch("./tool-manifest.json?refresh=" + Date.now(), {
+      headers: { "Accept": "application/json" },
+      cache: "no-store"
+    });
+    if (!response.ok) {
+      throw new Error("Backup tool catalog request failed: " + response.status);
+    }
+
+    const manifest = await response.json();
+    const names = Array.isArray(manifest) ? manifest : manifest && manifest.files;
+    if (!Array.isArray(names)) {
+      throw new Error("Backup tool catalog has an invalid format");
+    }
+
+    return names
+      .filter(name => typeof name === "string" && /\\.html?$/i.test(name) && !/^index\\.html?$/i.test(name))
+      .map(name => ({ name, type: "file" }));
+  }
 
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, ch => ({
@@ -161,7 +176,7 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
     if (isFallback) {
       const note = document.createElement("p");
       note.className = "intro";
-      note.textContent = "Live tool list could not be refreshed. Showing the last saved tools.";
+      note.textContent = "Live tool list is temporarily unavailable. Showing the automatically refreshed backup catalog.";
       appList.insertAdjacentElement("afterend", note);
     }
   }
@@ -177,8 +192,18 @@ footer{margin-top:22px;text-align:center;color:#748097;font-size:10px;letter-spa
       if (!Array.isArray(files)) throw new Error("Unexpected tool list response");
       renderTools(files, false);
     } catch (error) {
-      console.error(error);
-      renderTools(fallbackFiles, true);
+      console.error("Live GitHub catalog unavailable; loading the auto-refreshed backup catalog.", error);
+      try {
+        const backupFiles = await loadBackupFiles();
+        renderTools(backupFiles, true);
+      } catch (backupError) {
+        console.error("Backup catalog unavailable.", backupError);
+        appList.innerHTML =
+          '<article class="app"><div class="tag">TOOL CATALOG</div>' +
+          '<h2>Tools are temporarily unavailable</h2>' +
+          '<p class="desc">The live list and backup catalog could not be loaded. Please refresh the page.</p>' +
+          '<a href="./">Retry <span aria-hidden="true">→</span></a></article>';
+      }
     }
   }
 
