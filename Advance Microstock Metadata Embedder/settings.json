@@ -1,0 +1,7 @@
+{
+  "subfolders": true,
+  "backup": true,
+  "rating": true,
+  "notify": true,
+  "voice": "Female"
+}
