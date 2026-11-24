@@ -10,6 +10,7 @@ on:
       - '.github/workflows/update-tool-catalog.yml'
       - 'advance-microstock-*/advance-microstock-automator/**'
       - 'Advance Microstock Whisk Flow Automation - Installation Guide.txt'
+      - 'Advance Microstock Metadata Embedder/**'
   workflow_dispatch:
 
 permissions:
@@ -73,10 +74,22 @@ jobs:
                       archive.write(path, arcname=path.name)
               archive.write(guide, arcname="INSTALLATION GUIDE.txt")
 
+          # Package the complete Windows Metadata Embedder folder, including README.txt.
+          embedder_dir = Path("Advance Microstock Metadata Embedder")
+          if not embedder_dir.is_dir():
+              raise SystemExit(f"Metadata Embedder folder not found: {embedder_dir}")
+
+          embedder_zip = Path("Advance Microstock Metadata Embedder.zip")
+          with zipfile.ZipFile(embedder_zip, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+              for path in sorted(embedder_dir.rglob("*")):
+                  if path.is_file():
+                      archive.write(path, arcname=path.relative_to(embedder_dir.parent))
+
           # Remove the earlier version-specific package and guide.
           Path("Advance Microstock Whisk Flow Automation 5.3.0.zip").unlink(missing_ok=True)
           Path("Advance Microstock Whisk Flow Automation 5.3.0 - Installation Guide.txt").unlink(missing_ok=True)
           print(f"Packaged extension version from: {extension_dir}")
+          print(f"Packaged Metadata Embedder folder: {embedder_dir}")
           PY
 
       - name: Commit catalog and extension package when changed
